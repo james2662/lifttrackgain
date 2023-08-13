@@ -13,7 +13,7 @@ const MNavBar = () => {
             <ul className="hidden md:flex">
                 <li className="p-4">Home</li>
                 <li className="p-4">About</li>
-                <li className="p-4">Excersizes</li>
+                <li className="p-4">Excercises</li>
                 <li className="p-4">Content</li>
             </ul>
             <div onClick={handleNav} className="block md:hidden">
