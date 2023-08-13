@@ -14,7 +14,7 @@ const MNavBar = () => {
             <ul className="hidden md:flex">
                 <li className="p-4"><Link to="/">Home</Link></li>
                 <li className="p-4"><Link to="about">About</Link></li>
-                <li className="p-4">Excercises</li>
+                <li className="p-4"><Link to="signup">Signup</Link></li>
                 <li className="p-4">Content</li>
             </ul>
             <div onClick={handleNav} className="block md:hidden">
@@ -24,9 +24,9 @@ const MNavBar = () => {
             <div className={!nav ? "fixed left-0 top-0 w-[60%] h-full border-r border-r-gray-900 bg-[#000300] ease-in-out duration-500 md:left-[-100%]" : "fixed left-[-100%]"}>
                 <h1 className="w-full text-3xl font-bold text-[#00df98ee] m-4">LiftTrackGain.</h1>
                 <ul className="p-4 uppercase">
-                    <li className="p-4 border-b border-grey-600">Home</li>
-                    <li className="p-4 border-b border-grey-600">About</li>
-                    <li className="p-4 border-b border-grey-600">Excersizes</li>
+                    <li className="p-4 border-b border-grey-600"><Link to="/">Home</Link></li>
+                    <li className="p-4 border-b border-grey-600"><Link to="about">About</Link></li>
+                    <li className="p-4 border-b border-grey-600"><Link to="signup">Signup</Link></li>
                     <li className="p-4 ">Content</li>
                 </ul>
             </div>

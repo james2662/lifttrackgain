@@ -6,3 +6,20 @@ body {
   background-color: #000300;
 }
 
+@layer utilities {
+  .ltg-h1-green {
+    @apply text-3xl font-bold text-[#00df98ee];
+  }
+
+  .ltg-button-green {
+    @apply bg-[#00df98ee] w-[200px] rounded-md font-medium my-6 mx-auto py-3 text-black;
+  }
+
+  .ltg-input-std {
+    @apply p-3 flex md:w-[60%] sm:w-full rounded-md text-black align-text-bottom;
+  }
+
+  .ltg-input-email {
+    @apply p-3 flex md:w-[60%] sm:w-full rounded-md text-black;
+  }
+}
