@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
-import './App.css'
 import MNavBar from './components/MNavBar'
+import Hero from './components/Hero'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -9,6 +9,7 @@ function App() {
   return (
     <div>
       <MNavBar />
+      <Hero />
     </div>
   )
 }
