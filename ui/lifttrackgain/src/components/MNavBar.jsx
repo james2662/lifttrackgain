@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {AiOutlineClose, AiOutlineMenu} from 'react-icons/ai'
+import { Link, NavLink } from "react-router-dom";
 
 const MNavBar = () => {
     const [nav, setNav] = useState(true)
@@ -11,8 +12,8 @@ const MNavBar = () => {
         <div className="flex fustify-between items-center h-24 max-w-[1240px] mx-auto px-4 text-white">
             <h1 className="w-full text-3xl font-bold text-[#00df98ee]">LiftTrackGain.</h1>
             <ul className="hidden md:flex">
-                <li className="p-4">Home</li>
-                <li className="p-4">About</li>
+                <li className="p-4"><Link to="/">Home</Link></li>
+                <li className="p-4"><Link to="about">About</Link></li>
                 <li className="p-4">Excercises</li>
                 <li className="p-4">Content</li>
             </ul>
