@@ -16,10 +16,10 @@ body {
   }
 
   .ltg-input-std {
-    @apply p-3 flex md:w-[60%] sm:w-full rounded-md text-black align-text-bottom;
+    @apply p-3 md:w-[250px] sm:w-full rounded-md text-black align-text-bottom;
   }
 
   .ltg-input-email {
-    @apply p-3 flex md:w-[60%] sm:w-full rounded-md text-black;
+    @apply p-3 md:w-[60%] sm:w-full rounded-md text-black;
   }
 }
