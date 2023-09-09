@@ -2,6 +2,8 @@ import React from 'react'
 
 export const Signup = () => {
   return (
+    // TODO:  NEed to split user/pass into seperate form, page 1 of flow.  
+    // Makes formatting easier and appearance better
     <div className='w-full py-16 text-white px-4'>
         <div className='max-w-[1240px mx-auto'>
             <h1 className='ltg-h1-green py-3'>Signup</h1>
