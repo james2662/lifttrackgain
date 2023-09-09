@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		}
+	],
+	"settings": {
+		"python.defaultInterpreterPath": "D:/local_repos/lifttrackgain/app/Scripts/python.exe",
+		"code-runner.executorMap": {"python": "call D:/local_repos/lifttrackgain/app//Scripts/Activate.ps1 && python -u"}
+	}
+}
