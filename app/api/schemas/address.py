@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from ..lib.database import Base
+from ..libs.database import Base
 from ..security.schemas.oauthuser import OauthUser
 
 
