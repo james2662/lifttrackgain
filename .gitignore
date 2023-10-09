@@ -160,6 +160,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-./app/Scripts
-./app/Include
-./app/api/lifttrackgain.code-workspace
+.app/Scripts
+.app/Include
+.app/api/lifttrackgain.code-workspace
