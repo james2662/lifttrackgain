@@ -3,7 +3,7 @@
       "pkce": {
         "function": "oidcop.oidc.add_on.pkce.add_pkce_support",
         "kwargs": {
-          "essential": false,
+          "essential": true,
           "code_challenge_method": "S256 S384 S512"
         }
       },
@@ -58,7 +58,7 @@
           "db": {
             "class": "oidcop.util.JSONDictDB",
             "kwargs": {
-              "filename": "passwd.json"
+              
             }
           },
           "page_header": "Testing log in",

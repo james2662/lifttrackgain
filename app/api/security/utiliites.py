@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from fastapi import status
 from oic.oic import AuthorizationRequest
 from oidcmsg.oauth2 import ResponseMessage
+from oidcop.util import *
 
 
 def do_response(endpoint, req_args, response, error='', **args):
