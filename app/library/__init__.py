@@ -1,1 +1,1 @@
-from app.library.ltgusers.users import LTGUser as LTGUser
+from .ltgusers.users import LTGUser as LTGUser
