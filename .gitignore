@@ -27,7 +27,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-pyvenv.cfg
+/lifttg
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
