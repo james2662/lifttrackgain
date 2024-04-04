@@ -1,3 +1,4 @@
+from ..utilities.security import SecurityUtilities
 
 class LTGUser:
 
@@ -7,8 +8,8 @@ class LTGUser:
     def get_user_info():
         raise NotImplementedError
     
-    def _hash_password():
-        raise NotImplementedError
+    def _hash_password(plain_test: str) -> bytes:
+        return SecurityUtilities.get_a2_hash(plain_text=plain_test)
     
     def validate_user():
         raise NotImplementedError
