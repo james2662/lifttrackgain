@@ -1,0 +1,35 @@
+from passlib.context import CryptContext
+from cryptography.fernet import Fernet
+import secrets
+
+class SecurityUtilities:
+    pwd_context = CryptContext(schemes=["argon2"], argon2__salt_size=128, argon2__rounds=10)
+
+    @staticmethod
+    def verify_a2_hash(plain_text, hashed_text) -> bool:
+        try:
+            if SecurityUtilities.pwd_context.verify(plain_text, hashed_text):
+                return True
+        except Exception as e:
+            # TODO: log exceptions here
+            return False
+        return False
+    
+    @staticmethod
+    def get_a2_hash(plain_text) -> str:
+        return SecurityUtilities.pwd_context.hash(plain_text)
+    
+    @staticmethod
+    def encrypt_token(message: str, key: bytes = None) -> bytes:
+        if key is None:
+            raise NotImplementedError
+        fernet_obj = Fernet(key)
+        return fernet_obj.encrypt(bytes(message, 'utf-8'))
+        
+    @staticmethod
+    def decrypt_token(cyphertext: str, key: bytes = None) -> bytes:
+        cyphertext = bytes(cyphertext, 'utf-8')
+        if key is None:
+            raise NotImplementedError
+        fernet_obj = Fernet(key)
+        return fernet_obj.decrypt(cyphertext)
