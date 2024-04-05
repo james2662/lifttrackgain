@@ -19,7 +19,7 @@ class ltgUserBase(SQLModel):
 class ltgCreatedUser(ltgUserBase):
     password: str
 
-class ltgCreateUserReqeust(ltgUserBase)
+class ltgCreateUserReqeust(ltgUserBase):
     password: str
     confirm_password: str
 
