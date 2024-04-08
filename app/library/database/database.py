@@ -3,6 +3,7 @@ from sqlmodel import Session, SQLModel, create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.future import Engine
 from contextlib import contextmanager
+from ...models import *
 
 
 class Database:
