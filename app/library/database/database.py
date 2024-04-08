@@ -5,25 +5,30 @@ from sqlalchemy.future import Engine
 from contextlib import contextmanager
 
 
-class SQLLiteDatabase:
+class Database:
 
-    def __init__(self, session: Session | None, envrionment: str | None):
+    engine_types = ('sqllite')
 
+    def __init__(self, session: Session | None, envrionment: str | None, engine_type: str | None):
+        # testing engine_type is 'sqllite'
+        if engine_type is None or engine_type not in Database.engine_types:
+            raise NotImplementedError
+        
+        engine_type = engine_type
+        
         if session is None:
             self.session = self.get_session()
         else:
             self.session = session
         
-        SQLModel.metadata.create_all(self.get_engine('sqllite'))
+        SQLModel.metadata.create_all(self.get_engine(engine_type))
 
     def get_session(self) -> Session:
-        return sessionmaker(bind=self.get_engine('sqllite'), autoflush=True)
+        return sessionmaker(bind=self.get_engine(self.engine_type), autoflush=True)
     
-    def get_engine(self, type: str | None) -> Engine:
+    def get_engine(self, engine_type: str | None) -> Engine:
         
-        if type is None:
-            raise NotImplementedError
-        elif type == 'sqllite':
+        if engine_type == 'sqllite':
             sqllite_url = f"sqlite:///test.db"
             connect_args = {"check_same_thread": False}
             return create_engine(sqllite_url, echo=True, connect_args=connect_args)
