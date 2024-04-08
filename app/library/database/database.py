@@ -3,7 +3,7 @@ from sqlmodel import Session, SQLModel, create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.future import Engine
 from contextlib import contextmanager
-from ...models import *
+from models import *
 
 
 class Database:
@@ -15,7 +15,7 @@ class Database:
         if engine_type is None or engine_type not in Database.engine_types:
             raise NotImplementedError
         
-        engine_type = engine_type
+        self.engine_type = engine_type
         
         if session is None:
             self.session = self.get_session()
