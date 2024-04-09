@@ -1,7 +1,8 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
+*$py.
+*.db
 
 # C extensions
 *.so
@@ -132,7 +133,7 @@ env.bak/
 venv.bak/
 lifttg/
 ../lifttg/pyvenv.cfg
-*.db
+test.db
 
 # Spyder project settings
 .spyderproject
