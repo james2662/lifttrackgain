@@ -28,7 +28,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 lifttg/
-lifttg/pyvenv.cfg
+../lifttg/pyvenv.cfg
 
 
 # PyInstaller
