@@ -27,8 +27,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-lifttg/
-../lifttg/pyvenv.cfg
 
 
 # PyInstaller
@@ -132,6 +130,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+lifttg/
+../lifttg/pyvenv.cfg
+*.db
 
 # Spyder project settings
 .spyderproject
