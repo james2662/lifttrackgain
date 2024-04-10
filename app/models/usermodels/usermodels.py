@@ -1,5 +1,8 @@
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field, Relationship, Column
+from sqlalchemy.types import Uuid
 from typing import List, Optional
+from uuid import UUID as pyUUID
+import uuid
 
 # Schemeas 
 class UserBase(SQLModel):
@@ -8,7 +11,7 @@ class UserBase(SQLModel):
     is_active: bool = Field(default=True)
 
 class UserCore(UserBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True, index=True)
+    id: Optional[pyUUID] = Field(default=Uuid(as_uuid=True), primary_key=True, index=True, default_factory=uuid.uuid4)
     hashed_password: str = Field(nullable=False)
 
 # Response and Request Models
