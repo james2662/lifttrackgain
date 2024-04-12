@@ -9,6 +9,7 @@ from models import *
 class Database:
 
     engine_types = ('sqllite')
+    db_session: Session | None
 
     def __init__(self, session: Session | None, envrionment: str | None, engine_type: str | None):
         # testing engine_type is 'sqllite'
@@ -18,14 +19,21 @@ class Database:
         self.engine_type = engine_type
         
         if session is None:
-            self.session = self.get_session()
+            self.session = self.get_new_session()
         else:
             self.session = session
         
         SQLModel.metadata.create_all(self.get_engine(engine_type))
 
-    def get_session(self) -> Session:
+    def get_new_session(self) -> Session:
         return sessionmaker(bind=self.get_engine(self.engine_type), autoflush=True)
+    
+    def get_session(self) -> Session:
+        if self.db_session is not None:
+            return self.db_session
+        else: 
+            self.db_session = self.get_new_session()
+            return self.db_session
     
     def get_engine(self, engine_type: str | None) -> Engine:
         

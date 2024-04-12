@@ -11,7 +11,7 @@ class UserBase(SQLModel):
     is_active: bool = Field(default=True)
 
 class UserCore(UserBase, table=True):
-    id: Optional[pyUUID] = Field(default=Uuid(as_uuid=True), primary_key=True, index=True, default_factory=uuid.uuid4)
+    id: Optional[pyUUID] = Field(primary_key=True, index=True, default_factory=uuid.uuid4) # default=Uuid(as_uuid=True),
     hashed_password: str = Field(nullable=False)
 
 # Response and Request Models
