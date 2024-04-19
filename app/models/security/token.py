@@ -12,3 +12,11 @@ class Token(SQLModel):
 
 class TokenData(SQLModel):
     username: str | None = None
+    roles: List[str]
+    expire_time: int
+    scope: List[str]
+
+class TokenTracker(Token, table=True):
+    expire_time: int
+    user_id: pyUUID
+    login_ip: str
