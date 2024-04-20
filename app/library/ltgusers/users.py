@@ -13,21 +13,21 @@ class LTGUser:
         self.core_user = result
         
 
-    def get_user_info():
+    def get_user_info(self):
         raise NotImplementedError
     
-    def _hash_password(plain_test: str) -> bytes:
+    def _hash_password(self, plain_test: str) -> str | bytes:
         return SecurityUtilities.get_a2_hash(plain_text=plain_test)
     
-    def validate_user():
+    def validate_user(self):
         raise NotImplementedError
     
-    def create_user():
+    def create_user(self):
         raise NotImplementedError
     
-    def edit_user():
+    def edit_user(self):
         raise NotImplementedError
     
-    def login_user():
+    def login_user(self):
         raise NotImplementedError
 
