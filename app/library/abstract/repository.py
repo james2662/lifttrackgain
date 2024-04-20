@@ -8,6 +8,9 @@ class AbstractRepository(abc.ABC):
     
     _session = None
     _db = None
+    
+    # TODO: Make a context manager here to handle exceptions and create new session on
+    # DBAPIError exception, and others if needed
 
     @property
     def session(self):
