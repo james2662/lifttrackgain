@@ -1,6 +1,6 @@
 import abc
 import os
-from sqlmodel import SQLModel, Session
+from sqlmodel import SQLModel, Session, select
 from sqlalchemy.orm.session import Session as SSession
 from ..database import Database
 
@@ -59,7 +59,9 @@ class AbstractRepository(abc.ABC):
     
     @abc.abstractmethod
     def get(self, model, reference):
-        raise NotImplementedError
+        model_type = type(model)
+        statement = select(type(model)).where(type(model).id == reference)
+        return self._session.exec(statement=statement).first()
     
     @abc.abstractmethod
     def update(self, model, data: SQLModel):
