@@ -20,16 +20,16 @@ class SecurityUtilities:
         return SecurityUtilities.pwd_context.hash(plain_text)
     
     @staticmethod
-    def encrypt_token(message: str, key: bytes = None) -> bytes:
+    def encrypt_token_content(message: str, key: bytes | None = None) -> bytes:
         if key is None:
             raise NotImplementedError
         fernet_obj = Fernet(key)
         return fernet_obj.encrypt(bytes(message, 'utf-8'))
         
     @staticmethod
-    def decrypt_token(cyphertext: str, key: bytes = None) -> bytes:
-        cyphertext = bytes(cyphertext, 'utf-8')
+    def decrypt_token_content(cyphertext: str, key: bytes | None = None) -> bytes:
+        b_cyphertext = bytes(cyphertext, 'utf-8')
         if key is None:
             raise NotImplementedError
         fernet_obj = Fernet(key)
-        return fernet_obj.decrypt(cyphertext)
+        return fernet_obj.decrypt(b_cyphertext)

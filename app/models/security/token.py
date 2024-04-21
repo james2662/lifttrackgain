@@ -17,6 +17,7 @@ class TokenData(SQLModel):
     scope: List[str]
 
 class TokenTracker(Token, table=True):
+    id: Optional[pyUUID] = Field(primary_key=True, index=True, default_factory=uuid.uuid4)
     expire_time: int
     user_id: pyUUID
     login_ip: str

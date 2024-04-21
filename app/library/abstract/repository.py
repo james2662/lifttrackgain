@@ -2,12 +2,13 @@ import abc
 import os
 from sqlmodel import SQLModel, Session, select
 from sqlalchemy.orm.session import Session as SSession
+from typing import Any
 from ..database import Database
 
 
 class AbstractRepository(abc.ABC):
     
-    _session: SSession | Session | None = None
+    _session: Session | SSession | None = None
     _db: Database
 
     # TODO: Make a context manager here to handle exceptions and create new session on
@@ -25,12 +26,12 @@ class AbstractRepository(abc.ABC):
     def session(self, session: Session):
         AbstractRepository._session = session
         
-    def new_session(self) -> SSession:
+    def new_session(self, engine_type: str = 'sqllite') -> SSession | Session:
 
         self.close_session(AbstractRepository._session)
 
         # TODO: Add config load for db configs, things like type
-        AbstractRepository._db = Database(session=None, envrionment=None, engine_type='sqllite')
+        AbstractRepository._db = Database(session=None, envrionment=None, engine_type=engine_type)
         AbstractRepository._session = AbstractRepository._db.get_session()
         return AbstractRepository._session
 
@@ -55,14 +56,23 @@ class AbstractRepository(abc.ABC):
 
     @abc.abstractmethod
     def add(self, model: SQLModel):
-        raise NotImplementedError
+        self.session.add(model)
+        self.session.commit()
+        self.session.refresh(model)
     
     @abc.abstractmethod
-    def get(self, model, reference):
+    def get(self, model, reference) -> Any:
         model_type = type(model)
         statement = select(type(model)).where(type(model).id == reference)
-        return self._session.exec(statement=statement).first()
+        if self.session is not None:
+            result = self.session.exec(statement=statement)
+            return result.first()
+        else:
+            raise NotImplementedError
     
     @abc.abstractmethod
-    def update(self, model, data: SQLModel):
-        raise NotImplementedError
+    def update(self, data: SQLModel):
+        if self.session is not None:
+            self.session.add(data)
+            self.session.commit()
+            self.session.refresh(data)
