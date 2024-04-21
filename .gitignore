@@ -134,6 +134,7 @@ venv.bak/
 lifttg/
 lifttg/pyvenv.cfg
 test.db
+.vscode/
 
 # Spyder project settings
 .spyderproject
