@@ -27,3 +27,9 @@ class TokenRepository(AbstractRepository):
     def update(self, data: TokenTracker) -> TokenTracker:
         super().update(data)
         return data
+    
+    def remove(self, data: TokenTracker) -> None:
+        self.session.delete(data)
+        self.session.commit()
+        self.session.flush()
+        return None

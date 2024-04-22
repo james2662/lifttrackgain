@@ -4,6 +4,7 @@ import secrets
 
 class SecurityUtilities:
     pwd_context = CryptContext(schemes=["argon2"], argon2__salt_size=128, argon2__rounds=10)
+    temp_key = Fernet.generate_key()
 
     @staticmethod
     def verify_a2_hash(plain_text, hashed_text) -> bool:
@@ -22,7 +23,7 @@ class SecurityUtilities:
     @staticmethod
     def encrypt_token_content(message: str, key: bytes | None = None) -> bytes:
         if key is None:
-            raise NotImplementedError
+            key = SecurityUtilities.temp_key
         fernet_obj = Fernet(key)
         return fernet_obj.encrypt(bytes(message, 'utf-8'))
         
@@ -30,6 +31,6 @@ class SecurityUtilities:
     def decrypt_token_content(cyphertext: str, key: bytes | None = None) -> bytes:
         b_cyphertext = bytes(cyphertext, 'utf-8')
         if key is None:
-            raise NotImplementedError
+            key = SecurityUtilities.temp_key
         fernet_obj = Fernet(key)
         return fernet_obj.decrypt(b_cyphertext)
