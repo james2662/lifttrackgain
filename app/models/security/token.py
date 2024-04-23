@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship, Column
 from sqlalchemy.types import Uuid
 from typing import List, Optional
@@ -13,7 +14,7 @@ class Token(SQLModel):
 class TokenData(SQLModel):
     username: str | None = None
     roles: List[str]
-    expire_time: int
+    exp: datetime
     scope: List[str]
 
 class TokenTracker(Token, table=True):
