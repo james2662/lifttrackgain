@@ -13,7 +13,7 @@ class Token(SQLModel):
 
 class TokenData(SQLModel):
     username: str | None = None
-    roles: List[str]
+    roles: str
     exp: datetime
     scope: List[str]
 
