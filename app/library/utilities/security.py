@@ -1,5 +1,6 @@
 from passlib.context import CryptContext
 from cryptography.fernet import Fernet
+from fastapi import HTTPException
 import secrets
 
 class SecurityUtilities:
@@ -34,3 +35,9 @@ class SecurityUtilities:
             key = SecurityUtilities.temp_key
         fernet_obj = Fernet(key)
         return fernet_obj.decrypt(b_cyphertext)
+    
+credentails_exception = HTTPException(
+    status_code=403, 
+    detail="Could not validate credentials", 
+    headers={"WWW-Authenticate": "Bearer"}
+    )

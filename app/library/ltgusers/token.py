@@ -1,5 +1,5 @@
-
-from ..utilities.security import SecurityUtilities
+from fastapi.responses import JSONResponse
+from ..utilities.security import SecurityUtilities, credentails_exception
 from sqlmodel import Session, SQLModel, select
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from models.usermodels import usermodels
 from models.security.token import Token, TokenData
 import os
+
 
 
 
@@ -26,8 +27,15 @@ class TokenHandler:
     async def decode(self, token: Token) -> usermodels.ltgUserBase:
         # TODO: Verify Token, Decode token, and return a ltgUserBase instance
         # verify token
-
+        if token is None or  token.access_token is None:
+            raise credentails_exception # no token  
+        
         # Decode Token
+        try:
+            decoded_jwt = TokenData.model_construct(
+                **jwt.decode(token.access_token, self.SECRET_KEY, algorithms=[self.ALGORITHM]))
+        except JWTError:
+            raise credentails_exception
 
         # build and return ltgUserBase instance
         raise NotImplementedError
