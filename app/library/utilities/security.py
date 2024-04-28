@@ -44,6 +44,17 @@ class SecurityUtilities:
 
     @staticmethod
     def verify_a2_hash(plain_text, hashed_text) -> bool:
+        """
+        Verify if a plain text matches an Argon2 hashed text 
+        using the pwd_context instance of CryptContext.
+
+        Args:
+            plain_text (str): The plain text to be verified.
+            hashed_text (str): The hashed text to compare against.
+
+        Returns:
+            bool: True if the plain text matches the hashed text, False otherwise.
+        """
         try:
             if SecurityUtilities.pwd_context.verify(plain_text, hashed_text):
                 return True
@@ -54,6 +65,16 @@ class SecurityUtilities:
     
     @staticmethod
     def get_a2_hash(plain_text) -> str:
+        """
+        Hashes the given plain text using the pwd_context 
+        instance of CryptContext arghon2 hash algorithm.
+
+        Args:
+            plain_text (str): The plain text to be hashed.
+
+        Returns:
+            str: The hashed value of the plain text.
+        """
         return SecurityUtilities.pwd_context.hash(plain_text)
     
     @staticmethod
@@ -63,16 +84,30 @@ class SecurityUtilities:
             key = SecurityUtilities.SECRET_KEY
         fernet_obj = Fernet(key)
         return fernet_obj.encrypt(bytes(message, 'utf-8'))
-        
+    
     @staticmethod
     def decrypt_token_content(cyphertext: str, key: bytes | None = None) -> bytes:
+        """
+        Decrypts the given cyphertext using the provided key.
+
+        Args:
+            cyphertext (str): The cyphertext to decrypt.
+            key (bytes | None): The encryption key. If None, the default SECRET_KEY will be used.
+
+        Returns:
+            bytes: The decrypted content.
+
+        Raises:
+            ValueError: If the key is not provided and the default SECRET_KEY is not set.
+        """
         b_cyphertext = bytes(cyphertext, 'utf-8')
         SecurityUtilities.check_key()
         if key is None:
             key = SecurityUtilities.SECRET_KEY
         fernet_obj = Fernet(key)
         return fernet_obj.decrypt(b_cyphertext)
-    
+
+# Generic exception to handle credentials errors    
 credentails_exception = HTTPException(
     status_code=403, 
     detail="Could not validate credentials", 

@@ -21,6 +21,7 @@ class TokenRepository(AbstractRepository):
     
     def get(self, model, reference: str) -> TokenTracker | None:
         statement = select(TokenTracker).where(TokenTracker.access_token == reference)
+        # Despite below error this would be an instance of SQLModels Session and not SQLAlchemy
         result = self.session.exec(statement=statement)
         return result.first()
     

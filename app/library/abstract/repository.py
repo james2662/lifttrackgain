@@ -65,6 +65,7 @@ class AbstractRepository(abc.ABC):
         model_type = type(model)
         statement = select(type(model)).where(type(model).id == reference)
         if self.session is not None:
+            # SQLModel session is used, not SQLAlchemy, so error below is not true
             result = self.session.exec(statement=statement)
             return result.first()
         else:
