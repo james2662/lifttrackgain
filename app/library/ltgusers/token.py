@@ -27,8 +27,7 @@ class TokenHandler:
             TokenHandler.SECRET_KEY = meaning_of_life
         else:
             os.environ['ltg_life_meaning'] = TokenHandler.SECRET_KEY
-        
-    
+ 
     async def decode(self, token: Token) -> usermodels.ltgUserBase:
         """
         Verifies and Decodes the given token and returns an instance of 
