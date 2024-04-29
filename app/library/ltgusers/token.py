@@ -30,7 +30,7 @@ class TokenHandler:
         else:
             os.environ['ltg_life_meaning'] = TokenHandler.SECRET_KEY
  
-    async def decode(self, token: Token) -> usermodels.ltgUserBase:
+    async def decode(self, token: Token) -> TokenData:
         """
         Verifies and Decodes the given token and returns an instance of 
         ltgUserBase if validation is passed.
@@ -46,7 +46,7 @@ class TokenHandler:
         """
         # TODO: Logging, tray/catch, and error handling for all non credential exceptions
         # verify token
-        if token is None or  token.access_token is None:
+        if token is None or token.access_token is None:
             raise credentails_exception # no token  
         token_from_db = TokenHandler.TOKEN_REPOSITORY.get(TokenTracker, token.access_token) # check if token is in DB
         if token_from_db is None:
@@ -60,15 +60,10 @@ class TokenHandler:
                 **jwt.decode(token.access_token, self.SECRET_KEY, algorithms=[self.ALGORITHM]))
         except JWTError:
             raise credentails_exception
+        
+        return decoded_jwt
 
-        # build and return ltgUserBase instance
-        user_from_db = TokenHandler.USER_REPOSITORY.get(usermodels.ltgUserBase, token_from_db.user_id)  
-        if user_from_db is None:
-            raise credentails_exception # user not found in DB  
-        elif user_from_db.username != SecurityUtilities.decrypt_token_content(decoded_jwt.username):
-            raise credentails_exception # user not found in DB  
-        else: 
-            return usermodels.ltgUserBase(username=user_from_db.username, user_email=user_from_db.user_email)
+       
          
    # build the token data and encode it.  Need to store the token and token data in the DB
     async def encode(self, user_info: usermodels.UserCore, expires_mins: int | None = None) -> str:
