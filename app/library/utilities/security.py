@@ -26,8 +26,8 @@ class SecurityUtilities:
             # lets check the key in env.  If is not the same as our secret key return secret key
             if cls.SECRET_KEY != env_key_is.encode('utf-8') and cls.SECRET_KEY is not None:
                 # sync the env and our secret.  
-                # Keeps it from being tampered with while app is running, or at least affecting us
-                os.environ['ltg_key_42'] = cls.SECRET_KEY.decode('utf-8')
+                # Lets use env so we are synced with other processes
+                cls.SECRET_KEY = os.environ['ltg_key_42'].encode('utf-8')
                 return cls.SECRET_KEY
             # ok we have env key, but no Secret key so lets sync to env key
             elif cls.SECRET_KEY is None:
@@ -36,7 +36,7 @@ class SecurityUtilities:
             # Ok env and secret match lets agree and return
             else:
                 return cls.SECRET_KEY
-        # THis means we have no keys lets use our temp_key to set them both and return
+        # This means we have no keys lets use our temp_key to set them both and return
         else:
             cls.SECRET_KEY = cls.temp_key
             os.environ['ltg_key_42'] = cls.SECRET_KEY.decode('utf-8')
