@@ -1,33 +1,60 @@
-from ..utilities.security import SecurityUtilities
+from calendar import c
+from ..utilities.security import SecurityUtilities, credentails_exception
 from sqlmodel import Session, SQLModel, select
 from models.usermodels import usermodels
 from models.security.token import Token, TokenData
+from library.repositories.usersrepo import UsersRepository
+from .token import TokenHandler
+from datetime import datetime, timezone
 
 class LTGUser:
-
-    def __init__(self, db: Session, username: str):
+    token_handler = TokenHandler()
+    user_repo = UsersRepository()
+    def __init__(self, username: str, db: Session = None):
         # def get_user(db, username: str):
-
-        statement = select(usermodels.UserCore).where(usermodels.UserCore.username == username)
-        result = db.exec(statement=statement).first()
-        self.core_user = result
-        
-
-    def get_user_info(self):
-        raise NotImplementedError
+        try:
+            self.user = self.user_repo.get_user_by_username(username=username)
+        except Exception as e:
+            self.user = None
+    def get_user_info(self) -> usermodels.UserCore:
+        return self.user        
     
     def _hash_password(self, plain_test: str) -> str | bytes:
         return SecurityUtilities.get_a2_hash(plain_text=plain_test)
     
-    def validate_user(self):
+    async def validate_user(self, password: str) -> bool:
+        if self.user is None:
+            return False
+        else:
+            return SecurityUtilities.verify_a2_hash(plain_text=password, hashed_text=self.user.hashed_password)
+        # we should never get here but fail safe if we do somehow.
+        return False
+    
+    @staticmethod
+    def create_user():
         raise NotImplementedError
     
-    def create_user(self):
-        raise NotImplementedError
+    @staticmethod
+    async def get_logged_in_user(token: Token) -> usermodels.UserBase:
+        token_data = await LTGUser.token_handler.decode(token=token)
+        if token_data.exp < datetime.now(timezone.utc):
+            raise credentails_exception
+         # build and return ltgUserBase instance
+        user_from_db = LTGUser.user_repo.get_user_by_username(SecurityUtilities.decrypt_token_content(token_data.username))  
+        if user_from_db is None:
+            raise credentails_exception # user not found in DB  
+        elif user_from_db.is_active == False:
+            raise credentails_exception # user is not active
+        else: 
+            return usermodels.UserBase(username=user_from_db.username, user_email=user_from_db.user_email)
+        
     
     def edit_user(self):
         raise NotImplementedError
     
-    def login_user(self):
-        raise NotImplementedError
+    async def login_user(self, password: str) -> Token:
+        if self.validate_user(username=self.user.username, password=password):
+            return self.token_handler.encode(self.get_user_info())
+        else:
+            raise credentails_exception
 

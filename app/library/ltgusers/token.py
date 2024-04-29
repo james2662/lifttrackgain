@@ -92,7 +92,7 @@ class TokenHandler:
             roles='', # SecurityUtilities.encrypt_token_content(message=str(user_info.roles)).decode('utf-8'), 
             exp=expire, 
             scope=[])
-        encoded_jwt = jwt.encode(to_encode.model_dump(), self.SECRET_KEY, algorithm=self.ALGORITHM)
+        encoded_jwt: str = jwt.encode(to_encode.model_dump(), self.SECRET_KEY, algorithm=self.ALGORITHM)
         # TODO: Need to store the Token and TokenData in a TokenTracker and save to DB here
         # probably in a separate function.
         token = self.build_tokentracker(token=encoded_jwt,

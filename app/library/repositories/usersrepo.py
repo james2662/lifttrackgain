@@ -20,8 +20,18 @@ class UsersRepository(AbstractRepository):
         return model
     
     def get(self, model, reference: pyUUID) -> UserCore:
-        return super().get(model=model, reference=reference)
+        return super().get(model=UserCore, reference=reference)
     
+    def get_user_by_username(self, username: str) -> UserCore:
+        statement = select(UserCore).where(UserCore.username == username)
+        result = self.session.exec(statement=statement).first()
+        return result
+    
+    def get_user_by_name_and_password(self, username: str, password: str) -> UserCore:
+        statement = select(UserCore).where(UserCore.username == username).where(UserCore.hashed_password == password)
+        result = self.session.exec(statement=statement).first()
+        return result
+
     def update(self, data: UserCore) -> UserCore:
         super().update(data)
         return data
