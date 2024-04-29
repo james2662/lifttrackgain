@@ -9,6 +9,8 @@ from models.usermodels import usermodels
 from models.security.token import Token, TokenData, TokenTracker
 from repositories.tokenrepo import TokenRepository
 from repositories.usersrepo import UsersRepository
+from uuid import UUID as pyUUID
+from typing import List
 import os
 
 
@@ -85,22 +87,73 @@ class TokenHandler:
             expires_mins = self.ACCESS_TOKEN_EXPIRE_MINUTES
         expire = datetime.now(timezone.utc) + timedelta(minutes=expires_mins)
         # TODO: Break the below TokenData building into a separate function as roles/scope expand
-        to_encode = TokenData(
-            username=SecurityUtilities.encrypt_token_content(message=user_info.username).decode('utf-8'), 
+        to_encode = self.build_tokendata(
+            username=user_info.username, 
             roles='', # SecurityUtilities.encrypt_token_content(message=str(user_info.roles)).decode('utf-8'), 
             exp=expire, 
             scope=[])
         encoded_jwt = jwt.encode(to_encode.model_dump(), self.SECRET_KEY, algorithm=self.ALGORITHM)
         # TODO: Need to store the Token and TokenData in a TokenTracker and save to DB here
         # probably in a separate function.
-        token = TokenTracker(access_token=encoded_jwt,
-                                token_type='bearer',
-                                expire_time=int(expire.timestamp()), 
-                                user_id=user_info.id, 
-                                login_ip='',
+        token = self.build_tokentracker(token=encoded_jwt,
+                                        expire_time=int(expire.timestamp()), 
+                                        user_id=user_info.id, 
+                                        login_ip='',
         )
-        TokenHandler.TOKEN_REPOSITORY.add(token)
+        self.store_token(token)
         return encoded_jwt
 
+    def store_token(self, token: TokenTracker) -> None:
+        """
+        Stores the given token in the database.
 
+        Args:
+            token (TokenTracker): The token to store.
+        """
+        TokenHandler.TOKEN_REPOSITORY.add(token)
+
+    def remove_token(self, token: TokenTracker) -> None:
+        """
+        Removes the given token from the database.
+
+        Args:
+            token (TokenTracker): The token to remove.
+        """
+        TokenHandler.TOKEN_REPOSITORY.remove(token)
+
+    def build_tokentracker(self, token: str, user_id: pyUUID, expire_time: int, login_ip: str) -> TokenTracker:
+        """
+        Builds a TokenTracker instance from the given parameters.
+
+        Args:
+            token (str): The access token.
+            user_id (str): The user id.
+            expire_time (int): The expiration time of the token.
+            login_ip (str): The login IP address.
+
+        Returns:
+            TokenTracker: The built TokenTracker instance.
+        """
+        return TokenTracker(access_token=token, 
+                            token_type='bearer', 
+                            expire_time=expire_time, 
+                            user_id=user_id, 
+                            login_ip=login_ip)
     
+    def build_tokendata(self, username: str, roles: str, exp: datetime, scope: List[str] = []) -> TokenData:
+        """
+        Builds a TokenData instance from the given parameters.
+        This will encrypt the username before storing it.
+
+        Args:
+            username (str): The username.
+            roles (str): The roles.
+            exp (datetime): The expiration time.
+            scope (List[str]): The scope.
+
+        Returns:
+            TokenData: The built TokenData instance.
+        """
+        # TODO: As roles are added SecurityUtilities.encrypt_token_content(message=str(user_info.roles)).decode('utf-8'), 
+        username = SecurityUtilities.encrypt_token_content(message=username).decode('utf-8')
+        return TokenData(username=username, roles=roles, exp=exp, scope=scope)

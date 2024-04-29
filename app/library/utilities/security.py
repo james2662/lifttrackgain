@@ -4,6 +4,13 @@ from fastapi import HTTPException
 import secrets
 import os
 
+# Generic exception to handle credentials errors    
+credentails_exception = HTTPException(
+    status_code=403, 
+    detail="Could not validate credentials", 
+    headers={"WWW-Authenticate": "Bearer"}
+    )
+
 
 class SecurityUtilities:
     pwd_context = CryptContext(schemes=["argon2"], argon2__salt_size=128, argon2__rounds=10)
@@ -42,6 +49,7 @@ class SecurityUtilities:
             os.environ['ltg_key_42'] = cls.SECRET_KEY.decode('utf-8')
         return cls.SECRET_KEY
 
+    # Verify Argon2 hash
     @staticmethod
     def verify_a2_hash(plain_text, hashed_text) -> bool:
         """
@@ -63,6 +71,7 @@ class SecurityUtilities:
             return False
         return False
     
+    # Get Argon2 hash
     @staticmethod
     def get_a2_hash(plain_text) -> str:
         """
@@ -77,14 +86,26 @@ class SecurityUtilities:
         """
         return SecurityUtilities.pwd_context.hash(plain_text)
     
+    # Provide ability to encrypt token payloads
     @staticmethod
     def encrypt_token_content(message: str, key: bytes | None = None) -> bytes:
+        """
+        Encrypts the given message using the provided key or the default secret key.
+
+        Args:
+            message (str): The message to be encrypted.
+            key (bytes | None, optional): The encryption key. Defaults to None.
+
+        Returns:
+            bytes: The encrypted message.
+        """
         SecurityUtilities.check_key()
         if key is None:
             key = SecurityUtilities.SECRET_KEY
         fernet_obj = Fernet(key)
         return fernet_obj.encrypt(bytes(message, 'utf-8'))
     
+    # Provide ability to decrypt token payloads
     @staticmethod
     def decrypt_token_content(cyphertext: str, key: bytes | None = None) -> bytes:
         """
@@ -106,10 +127,3 @@ class SecurityUtilities:
             key = SecurityUtilities.SECRET_KEY
         fernet_obj = Fernet(key)
         return fernet_obj.decrypt(b_cyphertext)
-
-# Generic exception to handle credentials errors    
-credentails_exception = HTTPException(
-    status_code=403, 
-    detail="Could not validate credentials", 
-    headers={"WWW-Authenticate": "Bearer"}
-    )
