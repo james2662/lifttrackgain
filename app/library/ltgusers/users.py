@@ -16,7 +16,7 @@ class LTGUser:
             self.user = self.user_repo.get_user_by_username(username=username)
         except Exception as e:
             self.user = None
-    def get_user_info(self) -> usermodels.UserCore:
+    def get_user_info(self) -> usermodels.UserCore | None:
         return self.user        
     
     def _hash_password(self, plain_test: str) -> str | bytes:
@@ -46,15 +46,20 @@ class LTGUser:
         elif user_from_db.is_active == False:
             raise credentails_exception # user is not active
         else: 
-            return usermodels.UserBase(username=user_from_db.username, user_email=user_from_db.user_email)
+            return usermodels.UserBase(username=user_from_db.username, useremail=user_from_db.user_email)
         
     
     def edit_user(self):
         raise NotImplementedError
     
     async def login_user(self, password: str) -> Token:
-        if self.validate_user(username=self.user.username, password=password):
-            return self.token_handler.encode(self.get_user_info())
+        if self.validate_user(password=password):
+            userinfo = self.get_user_info()
+            if userinfo is None:
+                raise credentails_exception
+            else:
+                encoded_user_info = await self.token_handler.encode(user_info=userinfo)
+            return Token(access_token=encoded_user_info, token_type="bearer")
         else:
             raise credentails_exception
 

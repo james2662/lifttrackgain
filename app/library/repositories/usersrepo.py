@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel, Session, select
 from sqlalchemy.orm.session import Session as SSession
 from typing import Any
-from abstract.repository import AbstractRepository
+from library.abstract.repository import AbstractRepository
 from models.usermodels.usermodels import UserCore
 from sqlalchemy.types import Uuid
 from typing import List, Optional
@@ -19,15 +19,15 @@ class UsersRepository(AbstractRepository):
         super().add(model=model)
         return model
     
-    def get(self, model, reference: pyUUID) -> UserCore:
+    def get(self, model, reference: pyUUID) -> UserCore | None:
         return super().get(model=UserCore, reference=reference)
     
-    def get_user_by_username(self, username: str) -> UserCore:
+    def get_user_by_username(self, username: str) -> UserCore | None:
         statement = select(UserCore).where(UserCore.username == username)
         result = self.session.exec(statement=statement).first()
         return result
     
-    def get_user_by_name_and_password(self, username: str, password: str) -> UserCore:
+    def get_user_by_name_and_password(self, username: str, password: str) -> UserCore | None:
         statement = select(UserCore).where(UserCore.username == username).where(UserCore.hashed_password == password)
         result = self.session.exec(statement=statement).first()
         return result

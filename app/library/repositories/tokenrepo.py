@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel, Session, select
 from sqlalchemy.orm.session import Session as SSession
 from typing import Any
-from abstract.repository import AbstractRepository
+from library.abstract.repository import AbstractRepository
 from models.security.token import TokenTracker
 from sqlalchemy.types import Uuid
 from typing import List, Optional

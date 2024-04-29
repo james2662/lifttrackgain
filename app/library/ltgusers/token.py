@@ -7,8 +7,8 @@ import secrets
 from datetime import datetime, timedelta, timezone
 from models.usermodels import usermodels
 from models.security.token import Token, TokenData, TokenTracker
-from repositories.tokenrepo import TokenRepository
-from repositories.usersrepo import UsersRepository
+from ..repositories.tokenrepo import TokenRepository
+from ..repositories.usersrepo import UsersRepository
 from uuid import UUID as pyUUID
 from typing import List
 import os

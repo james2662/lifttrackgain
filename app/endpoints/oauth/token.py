@@ -1,7 +1,7 @@
 from os import access
 from dependencies import *
 from fastapi.security import OAuth2PasswordRequestForm
-from endpoints.oauth import router
+from routers.oauth import router
 from models.security.token import Token
 from library.ltgusers.users import LTGUser
 
@@ -12,4 +12,4 @@ async def token(form_data: OAuth2PasswordRequestForm = Depends()):
     """
     user = LTGUser(form_data.username)
     
-    return {"access_token": user.login_user(form_data.password), "token_type": "bearer"}
+    return user.login_user(form_data.password)
