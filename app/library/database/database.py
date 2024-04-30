@@ -30,11 +30,11 @@ class Database:
         return sessionmaker(bind=self.get_engine(self.engine_type), autoflush=True)
     
     def get_session(self) -> SSession:
-        if self.db_session is not None:
-            return self.db_session
+        if Database.db_session is not None:
+            return Database.db_session
         else: 
-            self.db_session = self.get_new_session()()
-            return self.db_session
+            Database.db_session = self.get_new_session()()
+            return Database.db_session
     
     def get_engine(self, engine_type: str | None) -> Engine:
         
