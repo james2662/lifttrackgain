@@ -20,9 +20,9 @@ class Database:
         self.engine_type = engine_type
         
         if session is None:
-            self.session = self.get_new_session()
+            self.db_session = self.get_new_session()
         else:
-            self.session = session
+            self.db_ession = session
         
         SQLModel.metadata.create_all(self.get_engine(engine_type))
 
