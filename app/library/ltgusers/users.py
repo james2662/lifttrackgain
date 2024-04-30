@@ -31,7 +31,13 @@ class LTGUser:
         return False
     
     @staticmethod
-    def create_user():
+    def create_user(username: str, email: str, password: str) -> usermodels.UserCore:
+        hashed_password = SecurityUtilities.get_a2_hash(plain_text=password)
+        # create user in DB
+        user = usermodels.UserCore(username=username, useremail=email, hashed_password=hashed_password)
+        LTGUser.user_repo.add(model=user)
+        return user
+
         raise NotImplementedError
     
     @staticmethod
@@ -40,7 +46,7 @@ class LTGUser:
         if token_data.exp < datetime.now(timezone.utc):
             raise credentails_exception
          # build and return ltgUserBase instance
-        user_from_db = LTGUser.user_repo.get_user_by_username(SecurityUtilities.decrypt_token_content(token_data.username))  
+        user_from_db = LTGUser.user_repo.get_user_by_username(SecurityUtilities.decrypt_token_content(token_data.username).decode('utf-8'))  
         if user_from_db is None:
             raise credentails_exception # user not found in DB  
         elif user_from_db.is_active == False:
