@@ -27,6 +27,7 @@ class AbstractRepository(abc.ABC):
     @contextmanager
     def get_scoped_session(self, engine_type: str = 'sqllite'):
         """Provide a transactional scope around a series of operations."""
+        self.engine_type = engine_type
         session = self.new_session(engine_type=engine_type)
         try:
             yield session
@@ -49,7 +50,7 @@ class AbstractRepository(abc.ABC):
         """
         if AbstractRepository._session is not None and AbstractRepository._session:
             # TODO: add session validation here at some point
-            return AbstractRepository._session()
+            return AbstractRepository._session
         else:
             return self.new_session()
     
@@ -65,11 +66,12 @@ class AbstractRepository(abc.ABC):
     def new_session(self, engine_type: str = 'sqllite') -> SSession | Session:
 
         self.close_session(AbstractRepository._session)
+        self.engine_type = engine_type
 
         # TODO: Add config load for db configs, things like type
         AbstractRepository._db = Database(session=None, envrionment=None, engine_type=engine_type)
-        AbstractRepository._session = AbstractRepository._db.get_session()
-        return AbstractRepository._session()
+        AbstractRepository._session = AbstractRepository._db.get_session()()
+        return AbstractRepository._session
 
 
     def close_session(self, session: Session | SSession | None):
@@ -112,7 +114,10 @@ class AbstractRepository(abc.ABC):
         """
         self.session.add(model)
         self.session.commit()
-        self.session.refresh(model)
+        if self.engine_type != 'sqllite':
+            print(f"engine type: {self.engine_type}")
+            print(self.engine_type != 'sqllite')
+            self.session.refresh(model)
     
     @abc.abstractmethod
     def get(self, model, reference) -> Any:
@@ -129,12 +134,10 @@ class AbstractRepository(abc.ABC):
         Raises:
             NotImplementedError: If the repository does not have an active session.
         """
-        model_type = type(model)
-        statement = select(type(model)).where(type(model).id == reference)
         if self.session is not None:
             # SQLModel session is used, not SQLAlchemy, so error below is not true
-            result = self.session.execute(statement=statement)
-            return result.first()
+            result = self.session.query(type(model)).where(type(model).id == reference).first()
+            return result
         else:
             raise NotImplementedError
     
@@ -152,4 +155,5 @@ class AbstractRepository(abc.ABC):
         if self.session is not None:
             self.session.add(data)
             self.session.commit()
-            self.session.refresh(data)
+            if self.engine_type != 'sqllite':
+                self.session.refresh(data)

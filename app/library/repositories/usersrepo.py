@@ -10,21 +10,26 @@ import uuid
 
 class UsersRepository(AbstractRepository):
 
-    def __init__(self, engine_type: str | None = None):
+    def __init__(self, engine_type: str | None = 'sqllite'):
         if engine_type is not None:
-            self.new_session(engine_type=engine_type)
-
-    
+            self.session = self.new_session(engine_type=engine_type)
+        if engine_type == 'sqllite':
+            with self._db.get_scoped_session() as session:
+                self.session = session
+                
     def add(self, model: UserCore) -> UserCore:
-        super().add(model=model)
+        self.session.add(model)
+        self.session.commit()
+        self.session.flush()
         return model
     
     def get(self, model, reference: pyUUID) -> UserCore | None:
-        return super().get(model=UserCore, reference=reference)
+        return self.session.query(UserCore).where(UserCore.id == reference).first()
     
     def get_user_by_username(self, username: str) -> UserCore | None:
-        statement = select(UserCore).where(UserCore.username == username)
-        result = self.session.execute(statement=statement).first()
+        # statement = select(UserCore).where(UserCore.username == username)
+        # result = self.session.execute(statement=statement).first()
+        result = self.session.query(UserCore).where(UserCore.username == username).first()
         print(result)
         return result
     

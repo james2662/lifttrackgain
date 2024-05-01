@@ -1,3 +1,4 @@
+from uu import encode
 from passlib.context import CryptContext
 from cryptography.fernet import Fernet
 from fastapi import HTTPException
@@ -15,7 +16,7 @@ credentails_exception = HTTPException(
 class SecurityUtilities:
     pwd_context = CryptContext(schemes=["argon2"], argon2__salt_size=128, argon2__rounds=10)
     temp_key = Fernet.generate_key()
-    SECRET_KEY: bytes
+    SECRET_KEY: bytes = temp_key
 
     # this hopefully will help multiple threads end up using same key.  
     # We will see this could be a source of a BUG with mutliple processes serving app
@@ -29,15 +30,17 @@ class SecurityUtilities:
                 # return key if we need it
                 return cls.SECRET_KEY
         # we have a key in env lets sync with secret key
-        elif env_key_is is not None:
+        elif env_key_is is not None or env_key_is != "".encode('utf-8'):
             # lets check the key in env.  If is not the same as our secret key return secret key
-            if cls.SECRET_KEY != env_key_is.encode('utf-8') and cls.SECRET_KEY is not None:
+            if cls.SECRET_KEY != env_key_is.encode('utf-8') and (
+                cls.SECRET_KEY is not None or cls.SECRET_KEY != "".encode('utf-8')):
                 # sync the env and our secret.  
                 # Lets use env so we are synced with other processes
                 cls.SECRET_KEY = os.environ['ltg_key_42'].encode('utf-8')
                 return cls.SECRET_KEY
             # ok we have env key, but no Secret key so lets sync to env key
-            elif cls.SECRET_KEY is None:
+            elif (cls.SECRET_KEY is None or cls.SECRET_KEY == "".encode('utf-8')) and (
+                env_key_is is None and env_key_is != "".encode('utf-8')):
                 cls.SECRET_KEY = env_key_is.encode('utf-8')
                 return cls.SECRET_KEY
             # Ok env and secret match lets agree and return
@@ -68,6 +71,7 @@ class SecurityUtilities:
                 return True
         except Exception as e:
             # TODO: log exceptions here
+            print(f"Error verifying hash: {e}")
             return False
         return False
     

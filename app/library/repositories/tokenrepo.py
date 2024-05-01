@@ -10,10 +10,13 @@ import uuid
 
 class TokenRepository(AbstractRepository):
 
-    def __init__(self, engine_type: str | None = None):
+    def __init__(self, engine_type: str | None = 'sqllite'):
         if engine_type is not None:
-            self.new_session(engine_type=engine_type)
-
+            self.session = self.new_session(engine_type=engine_type)
+            self.engine_type = engine_type
+        if engine_type == 'sqllite':
+            with self._db.get_scoped_session() as session:
+                self.session = session
     
     def add(self, model: TokenTracker) -> TokenTracker:
         """
@@ -25,7 +28,9 @@ class TokenRepository(AbstractRepository):
         Returns:
             TokenTracker: The added TokenTracker model.
         """
-        super().add(model=model)
+        self.session.add(model)
+        self.session.commit()
+        self.session.flush()
         return model
     
     def get(self, model, reference: str) -> TokenTracker | None:
@@ -41,8 +46,8 @@ class TokenRepository(AbstractRepository):
         """
         statement = select(TokenTracker).where(TokenTracker.access_token == reference)
         # Despite below error this would be an instance of SQLModels Session and not SQLAlchemy
-        result = self.session.exec(statement=statement)
-        return result.first()
+        result = self.session.query(TokenTracker).where(TokenTracker.access_token == reference).first()
+        return result
     
     def update(self, data: TokenTracker) -> TokenTracker:
         """

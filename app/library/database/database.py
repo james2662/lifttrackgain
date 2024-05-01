@@ -14,9 +14,9 @@ class Database:
     db_session: SSession | None
 
     def __init__(self, session: SSession | Session | None, envrionment: str | None, engine_type: str | None):
-        # testing engine_type is 'sqllite'
+        # testing engine_type is 'SQLite' or None, if not set to 'SQLite
         if engine_type is None or engine_type not in Database.engine_types:
-            raise NotImplementedError
+            engine_type = 'sqllite'
         
         self.engine_type = engine_type
         
@@ -30,6 +30,22 @@ class Database:
     def get_new_session(self) -> sessionmaker[SSession]:
         return sessionmaker(bind=self.get_engine(self.engine_type), autoflush=True)
     
+    # TODO: Make a context manager  here to handle exceptions and create new session on
+    # DBAPIError exception, and others if needed
+    @contextmanager
+    def get_scoped_session(self, engine_type: str = 'sqllite'):
+        """Provide a transactional scope around a series of operations."""
+        self.engine_type = engine_type
+        session = self.get_new_session()()
+        try:
+            yield session
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
     def get_session(self) -> SSession:
         if Database.db_session is not None:
             return Database.db_session

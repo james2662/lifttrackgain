@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from routers import oauth
 from models.usermodels.usermodels import UserBase
 from library.ltgusers.users import LTGUser
@@ -8,7 +8,7 @@ from library.ltgusers.users import LTGUser
 from dependencies import *
 from library.database import Database
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="oauth/token")
+
 
 ltg_app = FastAPI()
     #title="LiftTrackGainAPI", 

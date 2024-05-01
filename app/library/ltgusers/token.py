@@ -50,6 +50,7 @@ class TokenHandler:
             raise credentails_exception # no token  
         token_from_db = TokenHandler.TOKEN_REPOSITORY.get(TokenTracker, token.access_token) # check if token is in DB
         if token_from_db is None:
+            print(f"Token not found in DB: {token.access_token}")
             raise credentails_exception # token not found in DB 
         else: 
             if token_from_db.expire_time < int(datetime.now(timezone.utc).timestamp()):
@@ -95,7 +96,9 @@ class TokenHandler:
                                         user_id=user_info.id, 
                                         login_ip='',
         )
+        print(f"storing {token=} " )
         self.store_token(token)
+        print(f"token stored")
         return encoded_jwt
 
     def store_token(self, token: TokenTracker) -> None:

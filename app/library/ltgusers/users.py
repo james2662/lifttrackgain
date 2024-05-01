@@ -1,4 +1,7 @@
 from calendar import c
+from typing import Annotated
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
 from ..utilities.security import SecurityUtilities, credentails_exception
 from sqlmodel import Session, SQLModel, select
 from models.usermodels import usermodels
@@ -6,6 +9,7 @@ from models.security.token import Token, TokenData
 from library.repositories.usersrepo import UsersRepository
 from .token import TokenHandler
 from datetime import datetime, timezone
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="oauth/token")
 
 class LTGUser:
     token_handler = TokenHandler()
@@ -29,7 +33,13 @@ class LTGUser:
         if self.user is None:
             return False
         else:
-            return SecurityUtilities.verify_a2_hash(plain_text=password, hashed_text=self.user.hashed_password)
+            try:
+                print(f"{self.user=}")
+                print(f"{type(self.user)=}")
+                return SecurityUtilities.verify_a2_hash(plain_text=password, hashed_text=self.user.hashed_password)
+            except Exception as e:
+                print(f"Error validating user: {e}")
+                return False
         # we should never get here but fail safe if we do somehow.
         return False
     
@@ -38,15 +48,18 @@ class LTGUser:
         hashed_password = SecurityUtilities.get_a2_hash(plain_text=password)
         # create user in DB
         user = usermodels.UserCore(username=username, useremail=email, hashed_password=hashed_password)
-        LTGUser.user_repo.add(model=user)
+        print(f"{user=}")
+        result = LTGUser.user_repo.add(user)
+        print(f"{result=}")
         return user
 
         raise NotImplementedError
     
     @staticmethod
-    def get_logged_in_user(token: Token) -> usermodels.UserBase:
-        token_data = LTGUser.token_handler.decode(token=token)
-        if token_data.exp < datetime.now(timezone.utc):
+    def get_logged_in_user(token: Annotated[str, Depends(oauth2_scheme)]) -> usermodels.UserBase:
+        token_new = Token(access_token=token, token_type="bearer")
+        token_data = LTGUser.token_handler.decode(token=token_new)
+        if token_data.exp < datetime.now(timezone.utc).timestamp():
             raise credentails_exception
          # build and return ltgUserBase instance
         user_from_db = LTGUser.user_repo.get_user_by_username(SecurityUtilities.decrypt_token_content(token_data.username).decode('utf-8'))  
@@ -55,7 +68,7 @@ class LTGUser:
         elif user_from_db.is_active == False:
             raise credentails_exception # user is not active
         else: 
-            return usermodels.UserBase(username=user_from_db.username, useremail=user_from_db.user_email)
+            return usermodels.UserBase(username=user_from_db.username, useremail=user_from_db.useremail)
         
     
     def edit_user(self):
@@ -63,11 +76,10 @@ class LTGUser:
     
     def login_user(self, password: str) -> Token:
         if self.validate_user(password=password):
-            userinfo = self.get_user_info()
-            if userinfo is None:
+            if self.user is None:
                 raise credentails_exception
             else:
-                encoded_user_info = self.token_handler.encode(user_info=userinfo)
+                encoded_user_info = self.token_handler.encode(user_info=self.user)
             return Token(access_token=encoded_user_info, token_type="bearer")
         else:
             raise credentails_exception
