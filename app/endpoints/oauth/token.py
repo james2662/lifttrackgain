@@ -5,8 +5,8 @@ from routers.oauth import router
 from models.security.token import Token
 from library.ltgusers.users import LTGUser
 
-@router.post("/token", response_model=Token)
-async def token(form_data: OAuth2PasswordRequestForm = Depends()):
+@router.post("/token")
+async def token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     """
     Login for access token
     """

@@ -30,7 +30,7 @@ class TokenHandler:
         else:
             os.environ['ltg_life_meaning'] = TokenHandler.SECRET_KEY
  
-    async def decode(self, token: Token) -> TokenData:
+    def decode(self, token: Token) -> TokenData:
         """
         Verifies and Decodes the given token and returns an instance of 
         ltgUserBase if validation is passed.
@@ -66,7 +66,7 @@ class TokenHandler:
        
          
    # build the token data and encode it.  Need to store the token and token data in the DB
-    async def encode(self, user_info: usermodels.UserCore, expires_mins: int | None = None) -> str:
+    def encode(self, user_info: usermodels.UserCore, expires_mins: int | None = None) -> str:
         """
         Encodes the user information into a JWT access token.
 

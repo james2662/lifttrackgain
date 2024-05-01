@@ -8,12 +8,13 @@ from library.ltgusers.users import LTGUser
 from dependencies import *
 from library.database import Database
 
-ltg_app = FastAPI(
-    title="LiftTrackGainAPI", 
-    version="0.1",
-    )
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="oauth/token")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+ltg_app = FastAPI()
+    #title="LiftTrackGainAPI", 
+    #version="0.1",
+    
+    #)
 
 @ltg_app.get("/")
 async def get_test():
@@ -23,4 +24,4 @@ async def get_test():
 async def protected_point(current_user: Annotated[UserBase, Depends(LTGUser.get_logged_in_user)]):
     return {'current_user': current_user}
 
-ltg_app.include_router(router=oauth.router, prefix="/oauth")
+ltg_app.include_router(router=oauth.router, prefix="")

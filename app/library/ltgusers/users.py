@@ -16,13 +16,16 @@ class LTGUser:
             self.user = self.user_repo.get_user_by_username(username=username)
         except Exception as e:
             self.user = None
+            print(f"Self.user is None: {e}")
+        
+
     def get_user_info(self) -> usermodels.UserCore | None:
         return self.user        
     
     def _hash_password(self, plain_test: str) -> str | bytes:
         return SecurityUtilities.get_a2_hash(plain_text=plain_test)
     
-    async def validate_user(self, password: str) -> bool:
+    def validate_user(self, password: str) -> bool:
         if self.user is None:
             return False
         else:
@@ -41,8 +44,8 @@ class LTGUser:
         raise NotImplementedError
     
     @staticmethod
-    async def get_logged_in_user(token: Token) -> usermodels.UserBase:
-        token_data = await LTGUser.token_handler.decode(token=token)
+    def get_logged_in_user(token: Token) -> usermodels.UserBase:
+        token_data = LTGUser.token_handler.decode(token=token)
         if token_data.exp < datetime.now(timezone.utc):
             raise credentails_exception
          # build and return ltgUserBase instance
@@ -58,13 +61,13 @@ class LTGUser:
     def edit_user(self):
         raise NotImplementedError
     
-    async def login_user(self, password: str) -> Token:
+    def login_user(self, password: str) -> Token:
         if self.validate_user(password=password):
             userinfo = self.get_user_info()
             if userinfo is None:
                 raise credentails_exception
             else:
-                encoded_user_info = await self.token_handler.encode(user_info=userinfo)
+                encoded_user_info = self.token_handler.encode(user_info=userinfo)
             return Token(access_token=encoded_user_info, token_type="bearer")
         else:
             raise credentails_exception

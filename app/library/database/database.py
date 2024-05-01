@@ -1,4 +1,5 @@
 import logging
+from h11 import Data
 from sqlmodel import Session, SQLModel, create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session as SSession
@@ -20,9 +21,9 @@ class Database:
         self.engine_type = engine_type
         
         if session is None:
-            self.db_session = self.get_new_session()
+            Database.db_session = self.get_new_session()
         else:
-            self.db_ession = session
+            Database.db_ession = session
         
         SQLModel.metadata.create_all(self.get_engine(engine_type))
 
@@ -33,8 +34,8 @@ class Database:
         if Database.db_session is not None:
             return Database.db_session
         else: 
-            Database.db_session = self.get_new_session()()
-            return Database.db_session
+            Database.db_session = self.get_new_session()
+            return Database.db_session()
     
     def get_engine(self, engine_type: str | None) -> Engine:
         
