@@ -18,6 +18,8 @@ class LTGUser:
         # def get_user(db, username: str):
         try:
             self.user = self.user_repo.get_user_by_username(username=username)
+            if self.user is None:
+                print(f"User not found: {username} in DB")
         except Exception as e:
             self.user = None
             print(f"Self.user is None: {e}")

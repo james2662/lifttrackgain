@@ -27,10 +27,12 @@ class UsersRepository(AbstractRepository):
         return self.session.query(UserCore).where(UserCore.id == reference).first()
     
     def get_user_by_username(self, username: str) -> UserCore | None:
+        self.session.commit()
+        self.session.flush()
         # statement = select(UserCore).where(UserCore.username == username)
         # result = self.session.execute(statement=statement).first()
         result = self.session.query(UserCore).where(UserCore.username == username).first()
-        print(result)
+        print(f"result: {result}")
         return result
     
     def get_user_by_name_and_password(self, username: str, password: str) -> UserCore | None:
