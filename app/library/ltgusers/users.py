@@ -1,4 +1,5 @@
 from calendar import c
+from turtle import st
 from typing import Annotated
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
@@ -54,8 +55,27 @@ class LTGUser:
         result = LTGUser.user_repo.add(user)
         print(f"{result=}")
         return user
-
-        raise NotImplementedError
+    
+    @staticmethod
+    def check_user_unique(username: str, email: str) -> bool:
+        result = LTGUser.check_username_exists(username=username)
+        if not result:
+            result = LTGUser.check_email_exists(email=email)
+        return not result
+            
+    @staticmethod
+    def check_username_exists(username: str) -> bool:
+        user = LTGUser.user_repo.get_user_by_username(username=username)
+        if user is not None:
+            return True
+        return False
+    
+    @staticmethod
+    def check_email_exists(email: str) -> bool:
+        user = LTGUser.user_repo.get_user_by_email(email=email)
+        if user is not None:
+            return True
+        return False
     
     @staticmethod
     def get_logged_in_user(token: Annotated[str, Depends(oauth2_scheme)]) -> usermodels.UserBase:

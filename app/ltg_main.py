@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from routers import oauth
+from routers import oauth, admin
 from models.usermodels.usermodels import UserBase
 from library.ltgusers.users import LTGUser
 
@@ -25,3 +25,4 @@ async def protected_point(current_user: Annotated[UserBase, Depends(LTGUser.get_
     return {'current_user': current_user}
 
 ltg_app.include_router(router=oauth.router, prefix="")
+ltg_app.include_router(router=admin.router, prefix="")

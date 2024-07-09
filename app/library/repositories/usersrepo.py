@@ -35,6 +35,10 @@ class UsersRepository(AbstractRepository):
         print(f"result: {result}")
         return result
     
+    def get_user_by_email(self, email: str) -> UserCore | None:
+        result = self.session.query(UserCore).where(UserCore.useremail == email).first()
+        return result
+    
     def get_user_by_name_and_password(self, username: str, password: str) -> UserCore | None:
         statement = select(UserCore).where(UserCore.username == username).where(UserCore.hashed_password == password)
         result = self.session.execute(statement=statement).first()
