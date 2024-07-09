@@ -36,9 +36,9 @@ async def create_user(user_data: ltgCreateUserReqeust,
             )
     
 
-    user = LTGUser.create_user(username=user_data.username, email=user_data.email, password=user_data.password)
+    user = LTGUser.create_user(username=user_data.username, email=user_data.user_email, password=user_data.password)
 
 
 
     
-    return ltgCreatedUser(username=user.username, email=user.useremail, id=user.id)
+    return ltgCreatedUser(username=user.username, user_email=user.useremail, id=user.id, password=user_data.password)
